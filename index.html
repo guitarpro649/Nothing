@@ -30,8 +30,17 @@
       z-index: 2;
     }
 
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: none;
+      width: 250px;
+    }
+
     #startBtn, #restart {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 12px 24px;
       font-size: 18px;
       background-color: white;
@@ -54,7 +63,8 @@
   <!-- Startscherm -->
   <div id="startScreen">
     <h1>Welkom bij... Nothing</h1>
-    <button id="startBtn">Start spel</button>
+    <input type="text" id="playerName" placeholder="Voer je naam in">
+    <button id="startBtn" disabled>Start spel</button>
   </div>
 
   <!-- Game scherm -->
@@ -69,6 +79,7 @@
     let totalSeconds = 0;
     let timer = null;
     let gameOver = false;
+    let spelerNaam = '';
 
     function formatTime(seconds) {
       const days = Math.floor(seconds / 86400);
@@ -77,11 +88,11 @@
       seconds %= 3600;
       const minutes = Math.floor(seconds / 60);
       seconds %= 60;
-
       return `${days} dagen, ${hours} uur, ${minutes} minuten, ${seconds} seconden`;
     }
 
     function startGame() {
+      spelerNaam = document.getElementById("playerName").value;
       document.getElementById("startScreen").style.display = "none";
       document.getElementById("gameScreen").style.display = "block";
       startTimer();
@@ -105,7 +116,8 @@
       gameOver = true;
 
       clearInterval(timer);
-      document.getElementById('message').textContent = 'Je hebt iets gedaan! Spel afgelopen.';
+      document.getElementById('message').textContent =
+        `Je hebt iets gedaan, ${spelerNaam}! Spel afgelopen.`;
       document.getElementById('restart').style.display = 'inline-block';
 
       document.removeEventListener('mousemove', stopGame);
@@ -118,7 +130,14 @@
     }
 
     window.onload = () => {
-      document.getElementById('startBtn').addEventListener('click', startGame);
+      const startBtn = document.getElementById('startBtn');
+      const nameInput = document.getElementById('playerName');
+
+      nameInput.addEventListener('input', () => {
+        startBtn.disabled = nameInput.value.trim() === '';
+      });
+
+      startBtn.addEventListener('click', startGame);
       document.getElementById('restart').addEventListener('click', restartGame);
     };
   </script>
