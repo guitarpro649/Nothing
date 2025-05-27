@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Nothing</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #startScreen, #gameScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #startScreen {
+      background-color: black;
+      z-index: 2;
+    }
+
+    #startBtn, #restart {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: white;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #startBtn:hover, #restart:hover {
+      background-color: #ddd;
+    }
+
+    #restart {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Startscherm -->
+  <div id="startScreen">
+    <h1>Welkom bij... Nothing</h1>
+    <button id="startBtn">Start spel</button>
+  </div>
+
+  <!-- Game scherm -->
+  <div id="gameScreen" style="display: none;">
+    <h1>Doe niets...</h1>
+    <p id="status">De timer loopt: <span id="timer">0 seconden</span></p>
+    <p id="message"></p>
+    <button id="restart">Opnieuw starten</button>
+  </div>
+
+  <script>
+    let totalSeconds = 0;
+    let timer = null;
+    let gameOver = false;
+
+    function formatTime(seconds) {
+      const days = Math.floor(seconds / 86400);
+      seconds %= 86400;
+      const hours = Math.floor(seconds / 3600);
+      seconds %= 3600;
+      const minutes = Math.floor(seconds / 60);
+      seconds %= 60;
+
+      return `${days} dagen, ${hours} uur, ${minutes} minuten, ${seconds} seconden`;
+    }
+
+    function startGame() {
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("gameScreen").style.display = "block";
+      startTimer();
+
+      setTimeout(() => {
+        document.addEventListener('mousemove', stopGame);
+        document.addEventListener('keydown', stopGame);
+        document.addEventListener('click', stopGame);
+      }, 100);
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        totalSeconds++;
+        document.getElementById('timer').textContent = formatTime(totalSeconds);
+      }, 1000);
+    }
+
+    function stopGame() {
+      if (gameOver) return;
+      gameOver = true;
+
+      clearInterval(timer);
+      document.getElementById('message').textContent = 'Je hebt iets gedaan! Spel afgelopen.';
+      document.getElementById('restart').style.display = 'inline-block';
+
+      document.removeEventListener('mousemove', stopGame);
+      document.removeEventListener('keydown', stopGame);
+      document.removeEventListener('click', stopGame);
+    }
+
+    function restartGame() {
+      location.reload();
+    }
+
+    window.onload = () => {
+      document.getElementById('startBtn').addEventListener('click', startGame);
+      document.getElementById('restart').addEventListener('click', restartGame);
+    };
+  </script>
+</body>
+</html>
